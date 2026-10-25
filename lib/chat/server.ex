@@ -5,7 +5,7 @@ defmodule Chat.Server do
   @users Chat.Users
   @name { :global, __MODULE__ }
 
-  def start_link(_) do
+  def start_link() do
     GenServer.start_link(__MODULE__, nil, name: @name)
   end
 
@@ -18,8 +18,9 @@ defmodule Chat.Server do
 
   @impl true
   def init(nil) do
-    :ets.tab2list(@users) |> 
-    Node.connect()
+    for {_, _, node} <- :ets.tab2list(@users) do
+      Node.connect(node)
+    end
     {:ok, nil}
   end
 
