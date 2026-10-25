@@ -5,9 +5,9 @@ defmodule Chat.Proxy.Worker do
   @server { :global, Chat.Server }
   @groups Chat.Proxy.Worker.Groups
 
-  def start(node, socket) do
+  def start(socket) do
     GenServer.start(
-      __MODULE__, {node, socket, nil})
+      __MODULE__, {socket, nil})
   end
 
   defp parse(tokens) do
@@ -128,7 +128,7 @@ defmodule Chat.Proxy.Worker do
         {"Nickname already in use", nick}
       true -> 
         GenServer.cast(@server, 
-          { :set_nick, self(), node(), nick, new_nick }
+          { :set_nick, self(), nick, new_nick }
         )
         { "Nickname set", new_nick }
     end
@@ -139,11 +139,7 @@ defmodule Chat.Proxy.Worker do
   end
 
   @impl GenServer
-  def init({node, socket, nil}) do
-    if Node.connect(node) do
-      log(socket, "connected to #{inspect node}")
-    end
-    log(socket, "started worker")
+  def init({socket, nil}) do
     table = :ets.new(@groups, [:set, :private])
     {:ok, {socket, nil, table}}
   end

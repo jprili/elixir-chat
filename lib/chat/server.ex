@@ -10,17 +10,14 @@ defmodule Chat.Server do
   end
 
   defp get_nick(pid) do
-    case :ets.match_object(@users, {:_, pid, :_}) do
-      [{nick, _, _}] -> nick
+    case :ets.match_object(@users, {:_, pid}) do
+      [{nick, _}] -> nick
       _ -> nil
     end
   end
 
   @impl true
   def init(nil) do
-    for {_, _, node} <- :ets.tab2list(@users) do
-      Node.connect(node)
-    end
     {:ok, nil}
   end
 
@@ -34,27 +31,27 @@ defmodule Chat.Server do
   def handle_call(:list_current_users = msg, {pid, _}, nil) do
     log("#{inspect msg} #{inspect pid}")
     result = 
-      :ets.tab2list(@users) |> Enum.map(fn {n, _, _} -> n end)
+      :ets.tab2list(@users) |> Enum.map(fn {n, _} -> n end)
     {:reply, result, nil}
   end 
 
   @impl true
   def handle_cast(
-    {:set_nick, from, from_node, nick, new_nick} = msg, 
+    {:set_nick, from, nick, new_nick} = msg, 
     nil
   ) do
     log("#{inspect msg}")
     if nick != nil do
       :ets.delete(@users, nick)
     end
-    :ets.insert(@users, {new_nick, from, from_node})
+    :ets.insert(@users, {new_nick, from})
     {:noreply,  nil}
   end 
 
   @impl true
   def handle_cast({:remove_nick, pid, nick} = msg, nil) do
     log("#{inspect msg}")
-    [{^nick, ^pid, _}] = :ets.match_object(@users, {nick, pid, :_})
+    [{^nick, ^pid}] = :ets.match_object(@users, {nick, pid})
     :ets.delete(@users, nick)
     {:noreply, nil}
   end 
@@ -65,7 +62,7 @@ defmodule Chat.Server do
     Enum.each(names, 
       fn name -> 
         case :ets.lookup(@users, name) do
-          [{_, pid, _}] when pid != from -> 
+          [{_, pid}] when pid != from -> 
             GenServer.cast(
                 pid,
                 { :sent, get_nick(from), body }
