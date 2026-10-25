@@ -10,8 +10,8 @@ defmodule Chat.Server do
   end
 
   defp get_nick(pid) do
-    case :ets.match_object(@users, {:_, pid}) do
-      [{nick, _}] -> nick
+    case :ets.match_object(@users, {:_, pid, :_}) do
+      [{nick, _, _}] -> nick
       _ -> nil
     end
   end
@@ -34,7 +34,7 @@ defmodule Chat.Server do
   def handle_call(:list_current_users = msg, {pid, _}, nil) do
     log("#{inspect msg} #{inspect pid}")
     result = 
-      :ets.tab2list(@users) |> Enum.map(fn {n, _} -> n end)
+      :ets.tab2list(@users) |> Enum.map(fn {n, _, _} -> n end)
     {:reply, result, nil}
   end 
 
@@ -65,7 +65,7 @@ defmodule Chat.Server do
     Enum.each(names, 
       fn name -> 
         case :ets.lookup(@users, name) do
-          [{_, pid}] when pid != from -> 
+          [{_, pid, _}] when pid != from -> 
             GenServer.cast(
                 pid,
                 { :sent, get_nick(from), body }
