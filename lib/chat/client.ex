@@ -20,7 +20,7 @@ defmodule Chat.Client do
   end
 
   defp loop_send(socket) do
-    case IO.gets("> ") do
+    case IO.gets("") do
       :eof ->
         :gen_tcp.close(socket)
       line -> 

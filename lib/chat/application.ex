@@ -11,7 +11,7 @@ defmodule Chat.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      { Registry, [name: @registry, keys: :unique] },
+      { Registry, [name: @registry, keys: :unique] }
       # Starts a worker by calling: Chat.Server.start_link(arg)
     ]
 

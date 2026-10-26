@@ -2,7 +2,7 @@ defmodule Chat.DynamicSupervisor do
   use DynamicSupervisor
   @name  {:global, __MODULE__}
 
-  def start_link() do
+  def start_link(_) do
     DynamicSupervisor.start_link(__MODULE__, nil, name: @name)
   end
 

@@ -5,7 +5,7 @@ defmodule Chat.Server do
   @users Chat.Users
   @name { :global, __MODULE__ }
 
-  def start_link() do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, nil, name: @name)
   end
 
@@ -18,6 +18,7 @@ defmodule Chat.Server do
 
   @impl true
   def init(nil) do
+    log("Server started.")
     {:ok, nil}
   end
 
