@@ -4,7 +4,7 @@ A small, concurrent chat system in Elixir.
 
 # Architecture
 
-![res/elixir-chat-arch.png](Architecture)
+![Architecture](res/elixir-chat-arch.png)
 The architecture is composed of 
 distributed Erlang nodes, with elixir
 modules such as `Chat.Server`,
