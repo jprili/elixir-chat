@@ -5,14 +5,17 @@ A small, concurrent chat system in Elixir.
 # Architecture
 
 ![Architecture](res/elixir-chat-arch.png)
+
 The architecture is composed of 
-distributed Erlang nodes, with elixir
+distributed Erlang nodes, each containing Elixir
 modules such as `Chat.Server`,
 `Chat.Proxy` and `Chat.Proxy.Worker`. When a
 client connects to a proxy through `inet:tcp`,
 the proxy hands the client a worker connection.
 The proxy and the server communicate via
-`GenServer`.
+`GenServer`. The nicknames are stored in 
+the server's ETS table, and the groups
+in the workers' table.
 
 # Operation
 
@@ -58,5 +61,5 @@ Example:
 
 In `lisa`'s client, it would show:
 ```
-homer: hello everyone.
+homer: hello everyone
 ```
